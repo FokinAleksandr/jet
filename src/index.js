@@ -2,7 +2,7 @@
 import initialData from './data';
 import pagination from './utils';
 
-const SortOrderEnum = Object.freeze({ ASCENDING: 0, DESCENDING: 1, NONE: 2 });
+const SortOrderEnum = Object.freeze({ASCENDING: 0, DESCENDING: 1, NONE: 2});
 
 let data = initialData.slice();
 let currentPage = 1;
@@ -11,15 +11,31 @@ let pageQuantity = Math.ceil(data.length / rowsPerPage);
 
 let sorted = SortOrderEnum.NONE;
 
-const buildPage = () => {
+const buildStaticContent = () => {
+  const form = document.getElementById('searchForm');
+  form.addEventListener('submit', search);
+
+  const headers = document.getElementById('headers');
+
+  Object.keys(data[0]).forEach(key => {
+    const th = document.createElement('th');
+    const a = document.createElement('a');
+    a.classList.add('sort-by');
+    a.innerText = key;
+    a.addEventListener('click', () => sort(key));
+    th.appendChild(a);
+    headers.appendChild(th);
+  });
+};
+
+const buildDynamicContent = () => {
   const start = (currentPage - 1) * rowsPerPage;
   const end = start + rowsPerPage;
 
   const onePageData = data.slice(start, end);
-  const numberOfPages = Math.ceil(data.length / rowsPerPage);
 
   buildTableRows(onePageData);
-  buildPaginationLinks(currentPage, numberOfPages);
+  buildPaginationLinks();
 };
 
 const buildTableRows = data => {
@@ -34,23 +50,6 @@ const buildTableRows = data => {
       tr.appendChild(td);
     });
     table.appendChild(tr);
-  });
-};
-
-const buildSearchFormAndTableHeaders = () => {
-  const form = document.getElementById('searchForm');
-  form.addEventListener('submit', search);
-
-  const headers = document.getElementById('headers');
-
-  Object.keys(data[0]).forEach(key => {
-    const th = document.createElement('th');
-    const a = document.createElement('a');
-    a.classList.add('sort-by');
-    a.innerText = key;
-    a.addEventListener('click', () => sort(key));
-    th.appendChild(a);
-    headers.appendChild(th);
   });
 };
 
@@ -96,15 +95,15 @@ const updateCurrentPage = pageHref => {
     currentPage = parseInt(pageValue);
   }
 
-  buildPage();
-  return false;
+  buildDynamicContent();
 };
 
 const search = event => {
   const filteredData = [];
-  const searchValue = document.getElementById('searchInput').value;
+  let searchValue = document.getElementById('searchInput').value;
 
   if (searchValue !== '') {
+    searchValue = isNaN(searchValue) ? searchValue : parseInt(searchValue);
     initialData.forEach(obj => {
       Object.values(obj).forEach(value => {
         if (value === searchValue) {
@@ -121,12 +120,17 @@ const search = event => {
   pageQuantity = Math.ceil(data.length / rowsPerPage);
   currentPage = 1;
 
-  buildPage();
+  buildDynamicContent();
   event.preventDefault();
   return false;
 };
 
 const sort = sortedField => {
+
+  sorted = sorted === SortOrderEnum.ASCENDING
+      ? SortOrderEnum.DESCENDING
+      : SortOrderEnum.ASCENDING;
+
   data.sort((a, b) => {
     let comp1 = a[sortedField];
     let comp2 = b[sortedField];
@@ -142,15 +146,12 @@ const sort = sortedField => {
       return 0;
     }
   });
-  sorted =
-    sorted === SortOrderEnum.ASCENDING
-      ? SortOrderEnum.DESCENDING
-      : SortOrderEnum.ASCENDING;
+
   currentPage = 1;
-  buildPage();
+  buildDynamicContent();
 };
 
 window.addEventListener('load', () => {
-  buildPage();
-  buildSearchFormAndTableHeaders();
+  buildStaticContent();
+  buildDynamicContent();
 });
