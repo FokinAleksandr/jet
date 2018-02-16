@@ -2,7 +2,7 @@
 import initialData from './data';
 import pagination from './utils';
 
-const SortOrderEnum = Object.freeze({ASCENDING: 0, DESCENDING: 1, NONE: 2});
+const SortOrderEnum = Object.freeze({ ASCENDING: 0, DESCENDING: 1, NONE: 2 });
 
 let data = initialData.slice();
 let currentPage = 1;
@@ -126,12 +126,12 @@ const search = event => {
 };
 
 const sort = sortedField => {
-
-  sorted = sorted === SortOrderEnum.ASCENDING
+  sorted =
+    sorted === SortOrderEnum.ASCENDING
       ? SortOrderEnum.DESCENDING
       : SortOrderEnum.ASCENDING;
 
-  data.sort((a, b) => {
+  data.stableSort((a, b) => {
     let comp1 = a[sortedField];
     let comp2 = b[sortedField];
 
