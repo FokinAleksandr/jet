@@ -1,6 +1,6 @@
 'use strict';
 
-Array.prototype.stableSort = function(cmp) {
+const stableSort = function(arr, cmp) {
   cmp = cmp
     ? cmp
     : (a, b) => {
@@ -12,7 +12,7 @@ Array.prototype.stableSort = function(cmp) {
         }
         return 0;
       };
-  let stabilizedThis = this.map((el, index) => [el, index]);
+  let stabilizedThis = arr.map((el, index) => [el, index]);
   let stableCmp = (a, b) => {
     let order = cmp(a[0], b[0]);
     if (order !== 0) {
@@ -21,10 +21,10 @@ Array.prototype.stableSort = function(cmp) {
     return a[1] - b[1];
   };
   stabilizedThis.sort(stableCmp);
-  for (let i = 0; i < this.length; i++) {
-    this[i] = stabilizedThis[i][0];
+  for (let i = 0; i < arr.length; i++) {
+    arr[i] = stabilizedThis[i][0];
   }
-  return this;
+  return arr;
 };
 
 const pagination = (currentPage, pageCount) => {
@@ -58,4 +58,4 @@ const pagination = (currentPage, pageCount) => {
   return rangeWithDots;
 };
 
-export default pagination;
+export { pagination, stableSort };
