@@ -1,6 +1,6 @@
 'use strict';
 
-const stableSort = function(arr, cmp) {
+export const stableSort = function(arr, cmp) {
   cmp = cmp
     ? cmp
     : (a, b) => {
@@ -27,7 +27,7 @@ const stableSort = function(arr, cmp) {
   return arr;
 };
 
-const pagination = (currentPage, pageCount) => {
+export const pagination = (currentPage, pageCount) => {
   let current = currentPage,
     last = pageCount,
     delta = 2,
@@ -57,5 +57,3 @@ const pagination = (currentPage, pageCount) => {
 
   return rangeWithDots;
 };
-
-export { pagination, stableSort };
